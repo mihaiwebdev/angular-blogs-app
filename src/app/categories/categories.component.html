@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row bg-secondary-theme pb-4">
     <div class="col-md-12 mt-5">
-      <h3 class="text-center">New Categories</h3>
+      <h3 class="text-center">{{ formStatus }} Categories</h3>
       <p class="text-center mb-5">Add new categories from here</p>
 
       <form
@@ -15,7 +15,7 @@
             class="form-control p-2"
             placeholder="Add new Categorie"
             name="category"
-            ngModel
+            [(ngModel)]="formCategory"
             #category="ngModel"
             required
             [ngClass]="
@@ -37,10 +37,51 @@
             class="btn btn-block btn-info mb-2 text-white"
             [disabled]="categoryForm.invalid"
           >
-            Add category
+            {{ formStatus }} category
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div *ngIf="categories.length > 0" class="row my-5">
+    <div class="col-md-6 mx-auto">
+      <div class="card shadow-effect">
+        <div class="card-body">
+          <table class="table row-borderd hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let category of categories">
+                <td>{{ category.id }}</td>
+                <td>{{ category.category }}</td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-warning"
+                    (click)="editCategory(category.category, category.id)"
+                  >
+                    Edit
+                  </button>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="deleteCategory(category.id)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
