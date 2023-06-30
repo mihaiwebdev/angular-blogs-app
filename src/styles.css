@@ -31,7 +31,7 @@ a {
     background-color: var(--primary-color);
 }
 .bg-secondary-theme {
-    background-color: var(--secondary-color);
+    background-color: var(--secondary-color)!important;
 }
 .text-theme-primary{
     color: var(--primary-color);
