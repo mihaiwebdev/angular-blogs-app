@@ -44,6 +44,7 @@ export class CategoriesComponent implements OnInit {
       await this.categoryService.updateCategory(this.categoryId, {
         category: this.formCategory,
       });
+
       await this.categoryService.loadCategories();
       this.categories = this.categoryService.categories;
       this.formStatus = 'Add';

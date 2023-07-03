@@ -6,6 +6,14 @@
           <h3 class="text-theme-center">All blog posts</h3>
           <p>From here you can manage your blog posts</p>
 
+          <div *ngIf="posts.length > 0">
+            <div *ngFor="let post of posts">
+              <p>{{ post.title }}</p>
+              <p>{{ post.content }}</p>
+              <p>{{ post.category }}</p>
+            </div>
+          </div>
+
           <button
             class="btn btn-info bg-theme text-white"
             routerLink="/posts/create"
