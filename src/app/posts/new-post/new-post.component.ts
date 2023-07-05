@@ -8,8 +8,9 @@ import {
   FormControl,
 } from '@angular/forms';
 import { PostsService } from 'src/app/services/posts.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Post } from '../../interfaces/post';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-new-post',
@@ -17,28 +18,58 @@ import { Post } from '../../interfaces/post';
   styleUrls: ['./new-post.component.css'],
 })
 export class NewPostComponent implements OnInit {
-  imageSrc: any = './assets/image-placeholder.jpg';
+  imageSrc: string | ArrayBuffer = './assets/image-placeholder.jpg';
   categories!: Category[];
-  selectedImage!: File;
   postForm!: FormGroup;
   permalinkControl!: FormControl;
+  selectedImage!: string;
 
   constructor(
     private categoryService: CategoriesService,
     private formBuilder: FormBuilder,
     private postService: PostsService,
-    private router: Router
+    private storageService: StorageService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-    this.postForm = this.formBuilder.group({
-      title: ['', [Validators.required, Validators.minLength(10)]],
-      permalink: [{ value: '', disabled: true }, Validators.required],
-      excerpt: ['', [Validators.required, Validators.minLength(10)]],
-      category: ['', Validators.required],
-      image: ['', Validators.required],
-      content: ['', Validators.required],
-    });
+    // Get query params
+    this.route.queryParams.subscribe(async (q) => {
+      let post!: Post;
 
-    this.permalinkControl = this.postForm.get('permalink') as FormControl;
+      if (q['id']) {
+        const postData = await this.postService.getPost(q['id']);
+        if (postData) {
+          post = postData;
+          this.imageSrc = postData.image;
+          this.selectedImage = postData.image;
+        } else {
+          console.log('Post data is undefined');
+        }
+      }
+
+      // Create and validate form
+      this.postForm = this.formBuilder.group({
+        title: [
+          post?.title || '',
+          [Validators.required, Validators.minLength(10)],
+        ],
+        permalink: [
+          { value: post?.permalink || '', disabled: true },
+          Validators.required,
+        ],
+        excerpt: [
+          post?.excerpt || '',
+          [Validators.required, Validators.minLength(10)],
+        ],
+        category: [
+          post?.category ? `${post.category.name}-${post.category.id}` : '',
+          Validators.required,
+        ],
+        image: [''],
+        content: [post?.content || '', Validators.required],
+      });
+      this.permalinkControl = this.postForm.get('permalink') as FormControl;
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -57,19 +88,25 @@ export class NewPostComponent implements OnInit {
     this.permalinkControl.patchValue(target?.value.replace(/\s/g, '-'));
   }
 
-  // Select image
-  selectImage($event: Event) {
+  // Upload and preview image
+  async selectImage($event: Event): Promise<void> {
     const target = $event.target as HTMLInputElement;
 
     if (target.files && target.files.length > 0) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        this.imageSrc = e.target?.result;
+        if (e.target && e.target.result) {
+          this.imageSrc = e.target.result;
+        } else {
+          console.log('image is null');
+        }
       };
 
       reader.readAsDataURL(target.files[0]);
-      this.selectedImage = target.files[0];
+      this.selectedImage = await this.storageService.uploadImage(
+        target.files[0]
+      );
     } else {
       console.log('targe.files is null');
     }
@@ -85,14 +122,14 @@ export class NewPostComponent implements OnInit {
         name: this.postForm.value.category.split('-')[0],
         id: this.postForm.value.category.split('-')[1],
       },
-      image: '',
-      permalink: this.postForm.value.permalink,
+      image: this.selectedImage,
+      permalink: this.permalinkControl.value,
       isFeatured: false,
       views: 0,
       createdAt: new Date(),
       status: 'new',
     };
-    // data.image = this.selectedImage;
+
     await this.postService.createPost(data);
     this.postForm.reset();
     this.router.navigate(['/posts']);

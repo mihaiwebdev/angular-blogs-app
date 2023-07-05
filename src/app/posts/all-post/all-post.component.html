@@ -6,14 +6,6 @@
           <h3 class="text-theme-center">All blog posts</h3>
           <p>From here you can manage your blog posts</p>
 
-          <div *ngIf="posts.length > 0">
-            <div *ngFor="let post of posts">
-              <p>{{ post.title }}</p>
-              <p>{{ post.content }}</p>
-              <p>{{ post.category }}</p>
-            </div>
-          </div>
-
           <button
             class="btn btn-info bg-theme text-white"
             routerLink="/posts/create"
@@ -23,6 +15,55 @@
           <button class="btn btn-warning ms-2 text-white" routerLink="/">
             Back
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="posts.length > 0" class="row">
+    <div class="col-md-12">
+      <div class="card shadow-effect">
+        <div class="card-body">
+          <table class="table row-border hover">
+            <thead>
+              <tr>
+                <th>Number</th>
+                <th>Post Image</th>
+                <th>Titlte</th>
+                <th>Excerpt</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let post of posts; let i = index">
+                <td [width]="10">{{ i + 1 }}</td>
+                <td [width]="200">
+                  <img
+                    [src]="post.image"
+                    alt="post-image"
+                    class="img img-fluid"
+                  />
+                </td>
+                <td [width]="200">{{ post.title }}</td>
+                <td [width]="300">{{ post.excerpt }}</td>
+                <td>{{ post.category.name }}</td>
+                <td>{{ post.createdAt }}</td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-warning"
+                    routerLink="/posts/create"
+                    [queryParams]="{ id: post.id }"
+                  >
+                    Edit
+                  </button>
+                  <button class="btn btn-sm btn-danger">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

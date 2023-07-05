@@ -3,16 +3,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AngularEditorModule } from '@kolkov/angular-editor';
+
+import { AppRoutingModule } from './app-routing.module';
+import { environment } from '../environments/environment.prod';
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { environment } from '../environments/environment.prod';
-
-import { AppRoutingModule } from './app-routing.module';
-import { ToastrModule } from 'ngx-toastr';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { AngularEditorModule } from '@kolkov/angular-editor';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './layouts/header/header.component';
@@ -37,6 +37,7 @@ import { NewPostComponent } from './posts/new-post/new-post.component';
     AppRoutingModule,
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,

@@ -6,6 +6,8 @@ import {
   Firestore,
   CollectionReference,
   getDocs,
+  doc,
+  getDoc,
 } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 
@@ -37,11 +39,33 @@ export class PostsService {
 
       querySnapshot.forEach((doc) => {
         const data: Post = doc.data() as Post;
+        data.id = doc.id;
+
         posts.push(data);
       });
     } catch (error) {
       console.error(error);
     }
     return posts;
+  }
+
+  // Get single post from database
+  async getPost(id: string): Promise<Post | undefined> {
+    let post!: any;
+
+    try {
+      const docRef = doc(this.firestore, 'posts', id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        post = docSnap.data();
+      } else {
+        this.toastr.error('Post not found');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    return post;
   }
 }
