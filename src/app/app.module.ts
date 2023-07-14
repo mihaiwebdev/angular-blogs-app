@@ -13,6 +13,8 @@ import { environment } from '../environments/environment.prod';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFireModule } from '@angular/fire/compat';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './layouts/header/header.component';
@@ -21,6 +23,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { AllPostComponent } from './posts/all-post/all-post.component';
 import { NewPostComponent } from './posts/new-post/new-post.component';
+import { LoginComponent } from './auth/login/login.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +34,7 @@ import { NewPostComponent } from './posts/new-post/new-post.component';
     CategoriesComponent,
     AllPostComponent,
     NewPostComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,6 +48,8 @@ import { NewPostComponent } from './posts/new-post/new-post.component';
     AngularEditorModule,
     HttpClientModule,
     ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

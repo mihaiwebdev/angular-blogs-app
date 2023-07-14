@@ -8,8 +8,12 @@ import {
   getDocs,
   doc,
   getDoc,
+  DocumentData,
+  updateDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +21,11 @@ import { ToastrService } from 'ngx-toastr';
 export class PostsService {
   postsCollection: CollectionReference = collection(this.firestore, 'posts');
 
-  constructor(private firestore: Firestore, private toastr: ToastrService) {}
+  constructor(
+    private firestore: Firestore,
+    private toastr: ToastrService,
+    private storageService: StorageService
+  ) {}
 
   // Create post in database
   async createPost(postData: Post): Promise<void> {
@@ -50,8 +58,8 @@ export class PostsService {
   }
 
   // Get single post from database
-  async getPost(id: string): Promise<Post | undefined> {
-    let post!: any;
+  async getPost(id: string): Promise<Post> {
+    let post!: DocumentData;
 
     try {
       const docRef = doc(this.firestore, 'posts', id);
@@ -66,6 +74,28 @@ export class PostsService {
       console.error(error);
     }
 
-    return post;
+    return post as Post;
+  }
+
+  // Update post in database
+  async updatePost(id: string, data: object): Promise<void> {
+    try {
+      const docRef = doc(this.firestore, 'posts', id);
+      await updateDoc(docRef, data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // Delete post from database
+  async deletePost(id: string, imgPath: string): Promise<void> {
+    try {
+      const docRef = doc(this.firestore, 'posts', id);
+      await this.storageService.deleteImage(imgPath);
+      await deleteDoc(docRef);
+      this.toastr.warning('Data deleted');
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

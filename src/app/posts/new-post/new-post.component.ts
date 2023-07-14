@@ -23,6 +23,8 @@ export class NewPostComponent implements OnInit {
   postForm!: FormGroup;
   permalinkControl!: FormControl;
   selectedImage!: string;
+  formStatus: string = 'New';
+  postId: string = '';
 
   constructor(
     private categoryService: CategoriesService,
@@ -37,6 +39,8 @@ export class NewPostComponent implements OnInit {
       let post!: Post;
 
       if (q['id']) {
+        this.postId = q['id'];
+        this.formStatus = 'Edit';
         const postData = await this.postService.getPost(q['id']);
         if (postData) {
           post = postData;
@@ -130,7 +134,11 @@ export class NewPostComponent implements OnInit {
       status: 'new',
     };
 
-    await this.postService.createPost(data);
+    if (this.formStatus === 'New') {
+      await this.postService.createPost(data);
+    } else if (this.formStatus === 'Edit') {
+      await this.postService.updatePost(this.postId, data);
+    }
     this.postForm.reset();
     this.router.navigate(['/posts']);
   }

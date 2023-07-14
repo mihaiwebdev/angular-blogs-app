@@ -4,6 +4,7 @@ import {
   ref,
   uploadBytes,
   getDownloadURL,
+  deleteObject,
 } from '@angular/fire/storage';
 import { ToastrService } from 'ngx-toastr';
 
@@ -14,6 +15,7 @@ export class StorageService {
   private storage: Storage = inject(Storage);
   private toastr: ToastrService = inject(ToastrService);
 
+  // Add image to fire storage
   async uploadImage(image: File): Promise<string> {
     const filePath = `postImages/${Date.now()}`;
     let imagePath: string = '';
@@ -34,5 +36,16 @@ export class StorageService {
     }
 
     return imagePath;
+  }
+
+  // Delete image
+  async deleteImage(imgPath: string): Promise<void> {
+    const desertRef = ref(this.storage, imgPath);
+    try {
+      await deleteObject(desertRef);
+      console.log('image deleted');
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
